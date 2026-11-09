@@ -1,0 +1,52 @@
+---
+title: "Check connection health and imported data"
+description: "Integrations lists the services that supply information to Nini."
+---
+
+This helps explain whether missing information is a connection problem or simply outside the dates and filters you selected.
+
+<Tip>
+**Example:** Yesterday's transactions are absent. A bank that needs you to sign in again is a different problem from a healthy connection viewed with last month's date filter.
+</Tip>
+
+<Info>
+**Before you start:** You need access to Settings. Read the connection state before changing anything.
+</Info>
+
+## Step by step
+
+1. Click Settings → Integrations and find the source under Connected. Cards that need action are listed first.
+2. Read the card's status line. The presence of a card is not proof of a successful current sync; see [Status meanings](#status-meanings).
+3. Click the card to inspect the connection. Bank cards open Accounts; accounting cards open the connection's own page. Confirm the source or company is the one you intended.
+4. Read Recent activity. Each line shows when something happened, the source, what happened (for example 12 records synced, Sync failed or Went offline) and whether it is OK or Action needed.
+5. Open a known imported item in Accounts, Documents or Records as appropriate. Compare its reference, date, amount, currency and counterparty with the source.
+6. If the item is missing, check the date range, filters and supported coverage. Record the exact status and last update for your administrator.
+7. Use the action on a card only when you understand what it will do. Do not create a duplicate connection to make a missing item appear.
+
+## Status meanings
+
+| Status | What it means | Action shown |
+| --- | --- | --- |
+| Up to date | Syncing as expected. | None |
+| Waiting for the first update | Connected, but the first data has not arrived yet. | None |
+| Sign in again | The provider stopped accepting Nini's access. | Reconnect |
+| Update delayed · retrying | The last sync reached the provider and failed; Nini retries. | Try again |
+| Not reachable · last heard from (date) | A desktop connector stopped checking in, usually because its computer is off. | Fix |
+| Behind · last update (date) | Nothing looks broken, but the last successful sync is older than its schedule allows. | Fix |
+| To look at | Syncing, but some items could not come into Nini. | Look at them |
+| Not paired | Set up in Nini, but the other end never connected. | None |
+| Disconnected | Switched off. Records already in Nini are kept; nothing new arrives. | None |
+
+Some cards show Synced with an elapsed time, Needs re-auth or Sync failed instead. Read these as Up to date, Sign in again and Update delayed.
+
+## Items that could not come in
+
+A bank card can list transactions the bank sent that Nini could not bring in, with the account, the reason and when it was last seen, for example a transaction for an account that is not in Nini or in a currency Nini does not support yet. Once the cause is fixed, the item comes in on the next update. If you decide an item should never come in, click Dismiss; Nini stops retrying it and it no longer counts as a problem.
+
+<Check>
+**Expected result:** You have checked both the connection's status and a representative imported item.
+</Check>
+
+<Warning>
+**If you get stuck:** If Integrations is absent, ask an administrator to inspect it. Follow the provider's agreed recovery process before using Add integration, Connect bank, Connect accounting or Sync now.
+</Warning>

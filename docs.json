@@ -1,72 +1,161 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "maple",
+  "name": "Nini",
+  "description": "Guides and API reference for Nini, Boreal's financial operating system",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#3200FF",
+    "light": "#C8FF00",
+    "dark": "#3200FF"
   },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#08090C"
     }
   },
+  "fonts": {
+    "family": "Public Sans"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "favicon": "/assets/favicon.svg",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/assets/logo-light.png",
+    "dark": "/assets/logo-dark.png",
+    "href": "https://docs.nini.io"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "index",
+              "guides/start-a-session",
+              "guides/navigation",
+              "guides/display-preferences",
+              "guides/profile-and-organization-settings"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "guides/documents/find-a-document",
+              "guides/documents/upload-a-document",
+              "guides/documents/review-extracted-information",
+              "guides/documents/email-intake"
+            ]
+          },
+          {
+            "group": "Records, Matches and Sets",
+            "pages": [
+              "guides/records/building-blocks",
+              "guides/records/books-and-posting-queue",
+              "guides/records/find-records",
+              "guides/records/matches-needing-attention",
+              "guides/records/inspect-a-match",
+              "guides/records/sets",
+              "guides/records/matching-settings"
+            ]
+          },
+          {
+            "group": "Review and next steps",
+            "pages": [
+              "guides/review/end-to-end-review",
+              "guides/review/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Gia",
+        "groups": [
+          {
+            "group": "Gia",
+            "pages": [
+              "gia/overview",
+              "gia/ask-a-question",
+              "gia/check-evidence",
+              "gia/continue-a-conversation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/overview",
+              "integrations/quickbooks-online",
+              "integrations/quickbooks-desktop",
+              "integrations/bank-account",
+              "integrations/document-storage-and-other",
+              "integrations/connection-health",
+              "integrations/account-balances-and-transactions"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developers",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "developers/index",
+              "developers/quickstart"
+            ]
+          },
+          {
+            "group": "Build safely",
+            "pages": [
+              "developers/authentication",
+              "developers/errors-and-limits"
+            ]
+          },
+          {
+            "group": "Extraction profiles",
+            "pages": [
+              "developers/legal-case-extraction",
+              "developers/ocr"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          }
+        ],
+        "openapi": "api-reference/openapi-partner.json"
+      }
+    ]
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:developers@nini.io"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Open Nini",
+      "href": "https://app.nini.io"
     }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
   },
   "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    "socials": {}
   }
 }

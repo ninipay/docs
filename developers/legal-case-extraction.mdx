@@ -1,0 +1,128 @@
+---
+title: "Legal case output"
+description: "The typed case result returned by the legal_case.v1 profile."
+---
+
+The `legal_case.v1` profile reads a single legal document — a complaint, order, notice, or similar filing — with Amazon Textract and returns a typed case result: the case identity, the parties and their counsel, claims, deadlines, hearing dates, and monetary amounts, each traceable back to the pages it came from.
+
+The flow is the same for every profile. Follow the [Quickstart](/developers/quickstart) to create an extraction, upload the document, and poll for the result, read [Authentication](/developers/authentication) for the credentials flow, and read [Errors and limits](/developers/errors-and-limits) for statuses and limits. This page documents only what `legal_case.v1` returns.
+
+<Note>
+  Your organization must have `legal_case.v1` enabled. Profiles, file-size limits, and the processing region are confirmed during onboarding, and the API base URL is shown with your credential in **Settings → Developer access**.
+</Note>
+
+## Result
+
+When the status is `succeeded`, `result` is a `legal_case.v1` object. Optional fields are omitted or `null` when not found; list fields are returned empty rather than omitted.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `profile` | string | Always `legal_case.v1`. |
+| `schema_version` | string | Result schema version for this profile, currently `1.1`. |
+| `document_type` | string | Classified document type, e.g. `complaint`, `order`, `notice`. `legal_document` when no specific type is identified. |
+| `case_number` | string? | Docket or case number, when present. |
+| `title` | string? | Case or document title. |
+| `court` | string? | Court name. |
+| `jurisdiction` | string? | Jurisdiction. |
+| `filing_date` | string? | Filing date as printed on the document. |
+| `parties` | array | Parties to the case. See [Party](#party). |
+| `attorneys` | array | Counsel of record. See [Attorney](#attorney). |
+| `judges` | string[] | Judge names. |
+| `claims` | string[] | Claims or causes of action. |
+| `deadlines` | array | Dated obligations. See [Date](#date). |
+| `hearing_dates` | array | Scheduled hearings. See [Date](#date). |
+| `monetary_amounts` | array | Amounts referenced in the document. See [Amount](#amount). |
+| `summary` | string? | Short plain-language summary. |
+| `confidence` | number | Overall extraction confidence, `0.0`–`1.0`. |
+| `warnings` | string[] | Non-fatal notes about the extraction. |
+| `source_pages` | int[] | Every OCR page processed, in order. |
+| `citations` | array | Which pages support each extracted fact. See [Citation](#citation). |
+
+#### Party
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Party name. |
+| `role` | string | Role in the case, e.g. `plaintiff`, `defendant`. |
+
+#### Attorney
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Attorney name. |
+| `firm` | string? | Firm, when stated. |
+| `represents` | string? | Party the attorney represents, when stated. |
+
+#### Date
+
+Used by `deadlines` and `hearing_dates`.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `date` | string? | The date as printed, when present. |
+| `description` | string | What the date refers to. |
+
+#### Amount
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `amount_minor` | integer | Amount in the currency's minor unit (e.g. cents). Divide by the currency's minor-unit factor for the major value. |
+| `currency` | string | Three-letter uppercase ISO 4217 currency code. |
+| `description` | string | What the amount refers to. |
+
+#### Citation
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `field` | string | The result field the citation supports, e.g. `case_number`. |
+| `value` | string | The extracted value as cited. |
+| `pages` | int[] | Source page numbers supporting the value. Every page appears in `source_pages`; citations without a valid page are dropped. |
+
+### Example
+
+```json
+{
+  "profile": "legal_case.v1",
+  "schema_version": "1.1",
+  "document_type": "complaint",
+  "case_number": "1:26-cv-04821",
+  "title": "Acme Holdings LLC v. Doe",
+  "court": "U.S. District Court, Southern District of New York",
+  "jurisdiction": "New York",
+  "filing_date": "2026-09-14",
+  "parties": [
+    { "name": "Acme Holdings LLC", "role": "plaintiff" },
+    { "name": "Jane Doe", "role": "defendant" }
+  ],
+  "attorneys": [
+    { "name": "Robert Chen", "firm": "Chen & Partners LLP", "represents": "Acme Holdings LLC" }
+  ],
+  "judges": ["Hon. Maria Alvarez"],
+  "claims": ["Breach of contract", "Unjust enrichment"],
+  "deadlines": [
+    { "date": "2026-10-28", "description": "Answer due" }
+  ],
+  "hearing_dates": [
+    { "date": "2026-11-15", "description": "Initial conference" }
+  ],
+  "monetary_amounts": [
+    { "amount_minor": 25000000, "currency": "USD", "description": "Damages sought" }
+  ],
+  "summary": "Breach-of-contract action seeking $250,000 in damages.",
+  "confidence": 0.93,
+  "warnings": [],
+  "source_pages": [1, 2],
+  "citations": [
+    { "field": "case_number", "value": "1:26-cv-04821", "pages": [1] },
+    { "field": "filing_date", "value": "2026-09-14", "pages": [1] }
+  ]
+}
+```
+
+<Warning>
+  Results are transient. Nini deletes the source after processing and stops serving the result within 24 hours of completion, at `result_expires_at`, after which the extraction returns `410`. Retrieve and store what you need promptly.
+</Warning>
+
+<Tip>
+  `confidence`, `warnings`, and `citations` are advisory signals. Route low-confidence results, or facts without supporting citations, to human review rather than treating them as final.
+</Tip>

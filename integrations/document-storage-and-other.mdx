@@ -1,0 +1,43 @@
+---
+title: "Use document storage and other integrations"
+description: "Cloud drive connections provide another way to bring supporting files into Nini."
+---
+
+Pick a folder in a connected drive and Nini brings in the statements, bills and receipts in it. Nini only reads your files; it never changes them. Other accounting and ERP connectors can add source information where they are enabled. Choose a connector because it supplies information you need, not simply because it is listed.
+
+<Tip>
+**Example:** If invoices are stored in a shared drive folder, importing that folder means new invoices saved there reach Nini without repeated manual uploads. For a one-off file, Upload is simpler.
+</Tip>
+
+<Info>
+**Before you start:** Confirm which drive account owns the files and what access the provider's sign-in screen requests. Choosing folders limits what Nini imports, not necessarily what the provider's sign-in grants.
+</Info>
+
+## Step by step
+
+1. Open Documents and click Cloud drives. The drawer lists Google Drive, Dropbox, OneDrive and SharePoint.
+2. Click Connect beside the drive you use. If Nini asks which entity the drive is for, choose it and click Continue.
+3. Sign in through the provider's authorization window and review the requested access before granting it.
+4. Back in Cloud drives, the drive appears under Connected. Click Choose folders.
+5. Browse or search the drive, select the folders or files you want, and import them. Selecting a folder imports everything inside it. Nini confirms with a message such as Importing 1 folder from Google Drive.
+6. Open Documents and find a known file. New files appear as Nini reads them; check their processing status before assuming they are ready for review.
+
+## Keep a drive up to date
+
+New files saved to a folder you imported come into Nini when the drive reports the change. To check straight away, open Cloud drives and click Sync now beside the drive. If Nini says no folders have been imported yet, use Choose folders first. If it asks you to reconnect, the drive's sign-in has expired.
+
+## Manage, disable or remove a connection
+
+Connected drives and other catalog connections also appear in Settings → Integrations. Click Add integration, find the provider and click Manage. Validate checks that the connection responds, Disable pauses syncing until you enable it again, and Delete connection permanently removes the integration and cannot be undone.
+
+## Other catalog integrations
+
+Add integration lists the providers available to your workspace, with All, Accounting and ERP filters. Use About to read a provider's details. A Disabled label means it is not currently enabled; Enable is a setup action, not evidence that it is already importing. For accounting or ERP sources, inspect an imported record against the source and confirm supported coverage with your administrator.
+
+<Check>
+**Expected result:** You know which connector is in use, what access was granted and whether the expected information has appeared.
+</Check>
+
+<Warning>
+**If you get stuck:** If the requested permissions are broader than intended, cancel setup and ask your administrator to confirm the approved approach. For a limited set of files, use manual upload while access scope is being resolved.
+</Warning>

@@ -1,0 +1,88 @@
+---
+title: "Quickstart"
+description: "Create, upload, and retrieve an extraction."
+---
+
+## Before you begin
+
+Sign in to Nini as a Bookkeeper, Controller, or Admin and open **Settings → Developer access**. From there you can:
+
+1. Under **API credentials**, create a credential and choose its processing region.
+2. Save the one-time **Client ID**, **Client secret**, and **API base URL**. The **Token request** shown with them contains your token URL and audience.
+3. Under **Reference**, select **Download OpenAPI** to get the specification for your region.
+4. For a United States regional credential, select **Test API** under **Usage and activity** and run it with a synthetic or fully redacted PDF or image of up to 10 MB. The test runs the `ocr.v1` profile on the same regional path as an external client and is included in usage. **Usage and activity** also shows today's document count and your recent extractions.
+
+The in-portal test confirms that extraction works for your organization. Your production integration still uses the client credentials flow below from server-side code.
+
+You need the credential values and the extraction profile assigned to your organization.
+
+Store the values in your shell without committing them:
+
+```bash
+export NINI_CLIENT_ID="your-client-id"
+export NINI_CLIENT_SECRET="your-client-secret"
+export NINI_TOKEN_URL="https://your-auth-domain/oauth/token"
+export NINI_AUDIENCE="your-api-audience"
+export NINI_API_BASE_URL="the-api-base-url-shown-with-your-credential"
+export NINI_PROFILE="your-assigned-profile"
+```
+
+## 1. Request an access token
+
+```bash
+export NINI_ACCESS_TOKEN="$(curl --silent --show-error \
+  --request POST "$NINI_TOKEN_URL" \
+  --header 'content-type: application/json' \
+  --data "{\"client_id\":\"$NINI_CLIENT_ID\",\"client_secret\":\"$NINI_CLIENT_SECRET\",\"audience\":\"$NINI_AUDIENCE\",\"grant_type\":\"client_credentials\"}" \
+  | jq --raw-output '.access_token')"
+```
+
+Access tokens expire after one hour. Reuse a token until it nears expiry; do not log or persist one as application data.
+
+## 2. Create an extraction
+
+Use a new idempotency key for each logical document submission. Repeating the same request with the same key returns `200` with the original extraction instead of `201`.
+
+`file_type` is the lowercase extension: `pdf`, `jpg`, `jpeg`, `png`, `tiff`, or `tif`. `file_size` is the exact byte length of the file you will upload.
+
+```bash
+export NINI_IDEMPOTENCY_KEY="$(uuidgen)"
+
+curl --silent --show-error \
+  --request POST "$NINI_API_BASE_URL/v1/extractions" \
+  --header "authorization: Bearer $NINI_ACCESS_TOKEN" \
+  --header "idempotency-key: $NINI_IDEMPOTENCY_KEY" \
+  --header 'content-type: application/json' \
+  --data "{\"filename\":\"document.pdf\",\"file_type\":\"pdf\",\"file_size\":123456,\"profile\":\"$NINI_PROFILE\"}"
+```
+
+Save the returned `id`. The response has `status: "awaiting_upload"` and an `upload` object with `method`, `url`, `expires_in` (seconds), `content_type`, and `content_length`.
+
+## 3. Upload the document
+
+The upload is sent directly to secure object storage, not to the API host. Send it before `expires_in` elapses, using `upload.content_type` as the `Content-Type`. The byte size must equal `upload.content_length`. If the URL expires, repeat the create request with the same idempotency key to receive a new one.
+
+```bash
+curl --silent --show-error \
+  --request PUT "$NINI_UPLOAD_URL" \
+  --header 'content-type: application/pdf' \
+  --upload-file './document.pdf'
+```
+
+## 4. Retrieve the result
+
+```bash
+curl --silent --show-error \
+  --header "authorization: Bearer $NINI_ACCESS_TOKEN" \
+  "$NINI_API_BASE_URL/v1/extractions/$NINI_EXTRACTION_ID"
+```
+
+Poll with backoff while the extraction is `awaiting_upload` or `processing`. Stop when the status is `succeeded` or `failed`. A successful response includes `result` and `result_expires_at`, the deadline for retrieving it; a failed response includes an `error` object with a stable `code`. See [Errors and limits](/developers/errors-and-limits#failed-extractions).
+
+Successful [`ocr.v1`](/developers/ocr) results contain an ordered `pages` array with page text, line count, and page-level confidence when Textract supplies it. The profile stops after OCR and does not invoke Nini matching, reconciliation, ledger, or LLM processing. Nini fails the extraction instead of returning an apparently complete result when page provenance is missing.
+
+Successful [`legal_case.v1`](/developers/legal-case-extraction) results include `source_pages`, listing every OCR page processed, and `citations`, which map extracted facts to their supporting page numbers.
+
+<Tip>
+  Call `GET /v1/usage` to show your organization's document count for the current UTC day and when it resets.
+</Tip>

@@ -1,0 +1,14 @@
+---
+title: "API reference"
+description: "Operations and schemas generated from Nini's partner OpenAPI contract."
+---
+
+Every endpoint page in this section is generated from the partner OpenAPI contract. Start with the [Quickstart](/developers/quickstart) and [Authentication](/developers/authentication) before calling the API.
+
+| Operation | Scope | Purpose |
+| --- | --- | --- |
+| `POST /v1/extractions` | `extraction:write` | Create an extraction and receive its upload request. |
+| `GET /v1/extractions/{id}` | `extraction:read` | Read an extraction's status and result. |
+| `GET /v1/usage` | `extraction:read` | Read your organization's document count for the current UTC day. |
+
+Send requests to the API base URL for your credential's processing region: `https://api.nini.io` for Canada (Montreal) or `https://api.us.nini.io` for the United States (N. Virginia). A credential works only in its own region. You can also download the contract for your region from **Settings → Developer access → Download OpenAPI**.

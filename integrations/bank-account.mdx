@@ -1,0 +1,45 @@
+---
+title: "Connect a bank account"
+description: "A bank connection supplies balances and transactions so Nini can show cash movement and compare it with accounting records and documents."
+---
+
+<Tip>
+**Example:** Connect the operating account used to pay suppliers, then use its transactions as evidence when reviewing a supplier-payment Match.
+</Tip>
+
+<Info>
+**Before you start:** Be authorized to connect the intended bank accounts. Know which organization and entity should own them, and have the bank's sign-in and verification method available.
+</Info>
+
+## Step by step
+
+1. Click Accounts in the sidebar, then Connect bank.
+2. The first time, Nini asks you to confirm your home currency. Nini reports everything in that currency, so if it is wrong, change it in Settings › Organization first. Otherwise click Use … and connect.
+3. If Nini asks "Which entity is this bank for?", choose the intended entity. Its accounts and transactions will belong to that entity.
+4. Click Continue to your bank. In the bank connection window, select the correct institution and follow its sign-in and verification prompts.
+5. Review the accounts and requested access. Complete authorization only for the intended accounts, then return to Nini. Nini confirms with Bank connected.
+6. Find the resulting accounts in Accounts and check their names and masked numbers.
+7. Read each account's Status column. Waiting for the bank means the first transactions have not arrived yet; Updated with a date means they have.
+8. Open an account and compare a known transaction with the bank source. Use [View account balances and transactions](/integrations/account-balances-and-transactions) for the account-activity walkthrough.
+
+## After you connect
+
+Nini asks your bank for up to two years of transaction history; how far back you get depends on the bank. After that, balances and transactions update on their own when the bank reports something new. To ask every connected bank for new transactions straight away, click Check for new transactions at the top of Accounts.
+
+If Nini warns that the accounts may already be in Nini through another connection, open the duplicate account's ⋯ menu and remove it. If the bank was already connected, its accounts stay where they were; use Move to another entity in the account's ⋯ menu to change where one belongs.
+
+## Disconnect or remove a bank
+
+Open the account, click ⋯ → Account settings, and choose one of these:
+
+- **Remove this account** stops updates for that account only. If it is the bank's last account in Nini, the bank is disconnected too. You can choose to also delete its transactions.
+- **Disconnect bank** stops updates for every account at that bank. Transactions and matches already in Nini stay. To bring it back, connect the bank again and Nini recognises its accounts.
+- **Delete bank and everything from it** is for a bank linked by mistake. It deletes every account's transactions and undoes their matches, and it cannot be undone. Only administrators see it.
+
+<Check>
+**Expected result:** You have the intended bank accounts in Nini and know whether their first transactions have arrived.
+</Check>
+
+<Warning>
+**If you get stuck:** If the bank or required account is unavailable, ask the connection owner for the supported route. If the bank needs you to sign in again, click Reconnect on the account or in Settings → Integrations rather than connecting the bank a second time; your transactions and matches stay as they are.
+</Warning>

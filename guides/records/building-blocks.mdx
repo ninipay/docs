@@ -1,0 +1,39 @@
+---
+title: "Understand Documents Records Matches and Sets"
+description: "Nini separates the original file, the individual information inside it, the evidence for one financial event and groups of related events."
+---
+
+These distinctions help you avoid mistaking several pieces of evidence for several payments.
+
+<Tip>
+**Example:** Imagine a CAD 900 supplier invoice and a CAD 900 bank payment. They can describe one payment supported by two pieces of evidence. They do not mean CAD 1,800 left the bank.
+</Tip>
+
+<Info>
+**Before you start:** You can read this section without opening anything. The terms below recur throughout the guide.
+</Info>
+
+## Step by step
+
+1. Start with the Document: the original uploaded or emailed file, such as an invoice PDF or bank statement. One document can contain several transactions.
+2. Look at the Records: individual financial items imported from a connected source or read from a document. A statement with eight transactions can produce eight records.
+3. Inspect the Match: records grouped to support the same financial event. For the example, inspect the invoice record and the bank-payment record together. A Match has a Bank side and a Books side.
+4. Use a Set when several Matches belong to a wider context, such as a project, supplier or period. Check each member Match as well as the group.
+5. Read statuses separately. Ready to approve means the records are grouped but not yet approved; In your books means the Match was approved and added to Nini's ledger; a warning such as No bank transaction yet describes missing or conflicting evidence; the ledger message tells you whether delivery to the ledger succeeded.
+
+<Check>
+**Expected result:** You can explain which file an item came from, what one record represents and why records belong together.
+</Check>
+
+<Warning>
+**If you get stuck:** If counts disagree, check whether one screen counts documents, another counts records and another counts Matches. Also compare their dates and filters.
+</Warning>
+
+## One event and several related events
+
+- One supplier payment supported by an invoice and bank transaction belongs in a Match. Compare the records as evidence for that event; do not add every evidence amount as though it were separate cash movement.
+- A project deposit and final payment are separate events. Their Matches can belong to one Set when the project is the shared context. Check that membership is meaningful and review the evidence in each Match.
+
+<Note>
+Nini's ledger is its own financial record. Adding a Match to your books in Nini does not write back to the connected accounting system. An In your books label does not, by itself, clear an evidence warning.
+</Note>

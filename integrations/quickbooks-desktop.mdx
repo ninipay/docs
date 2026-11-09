@@ -1,0 +1,44 @@
+---
+title: "Connect QuickBooks Desktop"
+description: "QuickBooks Desktop uses a different connection path because its company file is on a Windows computer."
+---
+
+Nini gives you a setup link to complete on the computer running QuickBooks Desktop.
+
+<Tip>
+**Example:** You review Nini in a browser on your laptop, but the bookkeeping company file is on an office Windows computer. Copy the setup link and complete the connection on that computer.
+</Tip>
+
+<Info>
+**Before you start:** Have access to the Windows machine running QuickBooks Desktop and someone who can authorize access to the correct company file. Confirm the organization in Nini first. Allow about 15 minutes.
+</Info>
+
+## Step by step
+
+1. Click Books in the sidebar, then Connect accounting. Find QuickBooks Desktop under Desktop and click Set up. You can also start from Settings → Integrations → Add integration → QuickBooks Desktop → Connect.
+2. If Nini asks which entity the connection is for, choose it and click Continue.
+3. Nini shows a Setup link. Click Copy and open the link on the Windows computer running QuickBooks Desktop. Use Open here only if you are already on that computer.
+4. Follow the steps on that computer for the intended company file. Have the company administrator complete any required authorization and install any software the setup asks for.
+5. Leave the Nini window open. It shows Waiting for the connection to be authorized… and updates by itself to QuickBooks Desktop connected when setup finishes. Click Done.
+6. Open Settings → Integrations and click the QuickBooks Desktop card. Confirm the QuickBooks company name refers to the intended company file.
+7. Wait for the first sync, then inspect a representative invoice or bill in Nini against the source. Use [Check connection health and imported data](/integrations/connection-health) if the connection is present but data has not arrived.
+
+## How syncing works
+
+Nini reads accounts, customers, invoices, bills and other transactions from the company file on a regular schedule. Syncing only happens while that computer is on and QuickBooks and its Web Connector are running. If they stop checking in, the connection shows Not reachable with the date Nini last heard from it.
+
+The connection page shows Records synced, Unmatched, Matched and Last sync, plus each sync scope's latest result. Use More actions → Check connection to test the link, or Rename connection to give it a clearer name.
+
+If setup was started but never completed, the connection page shows Finish setup. Use it to reopen the setup link for that company file rather than starting a new connection.
+
+## Disconnect
+
+Use More actions → Disconnect on the connection page. Records already synced stay in Nini, but the connection cannot be re-authorized afterwards; to sync that company file again you add it as a new connection.
+
+<Check>
+**Expected result:** The Desktop company is connected through its own setup route and a sample imported item has been checked.
+</Check>
+
+<Warning>
+**If you get stuck:** If setup remains pending, confirm that it was completed on the correct Windows machine and company file. If the status says Not reachable, check that the computer is on and QuickBooks and its Web Connector are running. An Online connection is not a replacement for the Desktop setup.
+</Warning>

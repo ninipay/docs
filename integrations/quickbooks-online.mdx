@@ -1,0 +1,41 @@
+---
+title: "Connect QuickBooks Online"
+description: "The QuickBooks connection brings accounting information into Nini so you can compare it with bank activity and supporting documents, and ask Gia questions about the available information."
+---
+
+<Tip>
+**Example:** Compare an imported supplier bill or bill-payment record with the bank payment and the invoice that supports it.
+</Tip>
+
+<Info>
+**Before you start:** Use a QuickBooks account allowed to authorize the intended company. Confirm the Nini organization and make sure the company is not already connected. QuickBooks Desktop has a separate procedure in [Connect QuickBooks Desktop](/integrations/quickbooks-desktop).
+</Info>
+
+## Step by step
+
+1. Click Books in the sidebar, then Connect accounting. The drawer lists each accounting system with what Nini reads from it.
+2. Find QuickBooks Online under Cloud. If it is already under Connected, click Manage and check the linked company instead of creating another connection.
+3. Click Connect. If your organization keeps separate entities, Nini first asks which entity the connection is for; choose it and click Continue.
+4. Sign in through the authorization window that opens. Select the intended QuickBooks company and review the requested access before granting it. The exact provider screens can vary.
+5. Complete the provider prompts and return to Nini. Open Settings → Integrations and click the QuickBooks card to open its connection page. Confirm the connection identifies the company you intended.
+6. Wait for the status to change from Waiting for the first update. If it does not, click Sync now on the connection page to import the company's history.
+7. Inspect a sample record. Compare its date, amount, currency and counterparty with QuickBooks before treating the import as complete.
+8. Back on Books, check which system is marked Books of record. The first accounting system you connect becomes books of record; another connected system shows as a read-only mirror, and you can switch with Make books of record.
+
+## What Nini imports
+
+Nini reads your chart of accounts, customers and vendors, and transactions such as invoices, bills, expenses, payments, bill payments, credit notes and refunds. Supported attachments on QuickBooks transactions come in as supporting documents.
+
+Changes in QuickBooks reach Nini when QuickBooks reports them. Sync now on the connection page asks for the latest straight away. Approving entries in Nini posts them to Nini's own ledger; it does not change your QuickBooks company.
+
+## Disable or remove the connection
+
+Open Settings → Integrations → Add integration, find QuickBooks and click Manage. Validate checks that the connection still responds. Disable pauses syncing until you enable it again. Delete connection permanently removes the integration and cannot be undone, so use it only when you are sure.
+
+<Check>
+**Expected result:** The intended company is connected and you have checked that representative data has arrived.
+</Check>
+
+<Warning>
+**If you get stuck:** If authorization finishes but records are missing, check the connection's status, dates and supported record types. If the status says Sign in again, click Reconnect on its card. Do not repeatedly disconnect and reconnect; ask your administrator to investigate the existing connection.
+</Warning>

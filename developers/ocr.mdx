@@ -1,0 +1,32 @@
+---
+title: "OCR output"
+description: "The stable page-preserving response returned by the ocr.v1 profile."
+---
+
+The `ocr.v1` profile extracts text with Amazon Textract and returns it in source-page order. It terminates after OCR: Nini does not classify, match, reconcile, publish to a ledger, or call an LLM for this profile.
+
+```json
+{
+  "profile": "ocr.v1",
+  "schema_version": "1.0",
+  "page_count": 2,
+  "pages": [
+    {
+      "page": 1,
+      "text": "Text from the first page",
+      "line_count": 1,
+      "confidence": 99.2
+    },
+    {
+      "page": 2,
+      "text": "Text from the second page",
+      "line_count": 1,
+      "confidence": 98.7
+    }
+  ]
+}
+```
+
+`page` is one-based and pages are always contiguous and ordered. `confidence`, when present, is the mean confidence of the page's detected lines on a scale from 0 to 100. A page can contain empty text when no text was detected, but the extraction fails if the document has no detected text or page provenance is incomplete. In that case the extraction status is `failed` with error code `extraction_failed`.
+
+The result remains available for retrieval until the extraction's `result_expires_at`, at most 24 hours after completion, after which the extraction returns `410`. Store it in your own system if your workflow needs it after that window.

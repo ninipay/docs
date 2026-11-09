@@ -1,0 +1,476 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nini Ingestion API",
+    "description": "Asynchronous, tenant-isolated document extraction for applications integrating with Nini.",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.nini.io",
+      "description": "Canada (Montreal)"
+    },
+    {
+      "url": "https://api.us.nini.io",
+      "description": "United States (N. Virginia)"
+    }
+  ],
+  "paths": {
+    "/v1/extractions": {
+      "post": {
+        "tags": [
+          "Extractions"
+        ],
+        "operationId": "create_extraction",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Unique key for this extraction request (1-255 visible ASCII characters)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerCreateExtractionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Existing idempotent extraction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerCreateExtractionResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Extraction created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerCreateExtractionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Partner or profile is not enabled",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency key reused with different input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid filename, file type, or size",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              "extraction:write"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/extractions/{id}": {
+      "get": {
+        "tags": [
+          "Extractions"
+        ],
+        "operationId": "get_extraction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Extraction identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extraction state or result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerExtractionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Extraction not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Transient extraction result expired",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              "extraction:read"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "operationId": "get_usage",
+        "responses": {
+          "200": {
+            "description": "Current UTC-day document usage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerUsageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Partner is not enabled",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              "extraction:read"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExtractionProfile": {
+        "type": "string",
+        "enum": [
+          "legal_case.v1",
+          "ocr.v1"
+        ]
+      },
+      "PartnerCreateExtractionRequest": {
+        "type": "object",
+        "description": "Public documentation deliberately describes profile-shaped output without\npublishing a private partner's extraction schema.",
+        "required": [
+          "filename",
+          "file_type",
+          "file_size",
+          "profile"
+        ],
+        "properties": {
+          "file_size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "file_type": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ExtractionProfile"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartnerCreateExtractionResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "profile",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ExtractionProfile"
+          },
+          "status": {
+            "type": "string"
+          },
+          "upload": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PartnerPresignedUpload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "PartnerExtractionError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PartnerExtractionResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "profile",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PartnerExtractionError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ExtractionProfile"
+          },
+          "result": {},
+          "status": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PartnerPresignedUpload": {
+        "type": "object",
+        "required": [
+          "method",
+          "url",
+          "expires_in",
+          "content_type",
+          "content_length"
+        ],
+        "properties": {
+          "content_length": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "method": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "PartnerUsageResponse": {
+        "type": "object",
+        "required": [
+          "documents_used",
+          "resets_at"
+        ],
+        "properties": {
+          "documents_used": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "resets_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "allOf": [
+          {},
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "title",
+              "status",
+              "detail",
+              "instance"
+            ],
+            "properties": {
+              "detail": {
+                "type": "string",
+                "description": "Human-readable explanation specific to this occurrence."
+              },
+              "instance": {
+                "type": "string",
+                "description": "URI reference identifying the specific occurrence (typically the request path)."
+              },
+              "status": {
+                "type": "integer",
+                "format": "int32",
+                "description": "HTTP status code, mirrored in the response status line.",
+                "minimum": 0
+              },
+              "title": {
+                "type": "string",
+                "description": "Short human-readable summary of the problem type."
+              },
+              "trace_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "description": "URI reference identifying the problem type.\nFormat: `https://api.boreal.ca/errors/{kebab-case-slug}`."
+              }
+            }
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "OAuth 2.0 client-credentials access token issued by auth.nini.io"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Extractions",
+      "description": "Create document extractions and retrieve typed results"
+    },
+    {
+      "name": "Usage",
+      "description": "Read the current partner allowance"
+    }
+  ]
+}

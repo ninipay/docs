@@ -1,0 +1,55 @@
+---
+title: "Errors and limits"
+description: "Handle API failures, retries, and organization usage limits."
+---
+
+Nini returns API errors as Problem Details objects with `type`, `title`, `status`, `detail`, and `instance` fields. Use the HTTP status in application logic; do not parse human-readable `detail` text. Errors raised before a request reaches Nini, such as a rejected token or throttling at the edge, can return a minimal JSON body instead, so always branch on the status code first.
+
+## Common responses
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| `400` | The `Idempotency-Key` header is missing or malformed. | Send a key of 1–255 visible ASCII characters with no whitespace. |
+| `401` | The access token is missing, expired, or invalid. | Request a new token and retry once. |
+| `403` | The token lacks a scope, is not a client-credentials token, was issued for another processing region, or the API or profile is not enabled for your organization. | Check the credential and API base URL, and contact Nini if access is not enabled. |
+| `404` | The extraction does not exist for this organization. | Verify the ID. Do not retry indefinitely. |
+| `409` | An idempotency key was reused with different input. | Use the original input or a new key. |
+| `410` | The transient extraction result expired. | Submit the source again with a new idempotency key. |
+| `422` | The request body is invalid, for example an unsupported `file_type`, a non-positive `file_size`, or a file larger than your organization's limit. Some regions also use `422` for a missing or malformed `Idempotency-Key`. | Correct the request before retrying. |
+| `429` | Edge throttling was reached. | Back off before retrying. |
+| `5xx` | Nini could not complete the request, or extraction is temporarily unavailable. | Retry with exponential backoff and jitter. |
+
+## Failed extractions
+
+A processing failure is not an HTTP error. `GET /v1/extractions/{id}` returns `200` with `status: "failed"` and an `error` object containing a stable `code` and a short `message`.
+
+| Code | Meaning |
+| --- | --- |
+| `extraction_failed` | The document could not be extracted, for example because no text was detected or page provenance was incomplete. |
+| `usage_limit_exceeded` | The extraction could not run within your organization's configured usage limit. |
+
+Raw processor messages are never returned.
+
+## Idempotent retries
+
+`POST /v1/extractions` requires an `Idempotency-Key` header. Generate one for a logical submission and reuse it if a network error leaves the outcome unknown. Replaying the same request with the same key returns `200` and the original extraction instead of `201`; while the extraction is still `awaiting_upload`, the replay includes a fresh upload request. A key is scoped to your organization and must not be reused with a different filename, file type, file size, or profile.
+
+## Usage controls
+
+Nini applies edge throttling and organization-level file-size and profile controls.
+
+- **File types:** `pdf`, `jpg`, `jpeg`, `png`, `tiff`, and `tif`, sent as lowercase extensions.
+- **File size:** set per organization during onboarding. A request above your limit returns `422`.
+- **Profiles:** only profiles enabled for your organization are accepted. Others return `403`.
+
+`GET /v1/usage` returns `documents_used`, the number of extractions created in the current UTC day, and `resets_at`, the start of the next UTC day. An extraction counts when it is created, whether or not it later succeeds.
+
+## Billable usage
+
+Billable ingestion usage is measured by the actual number of pages in successfully completed extractions. Failed extractions are not billed. Retrying the same logical extraction with the same idempotency key does not create another charge. The daily document count returned by `GET /v1/usage` is informational and is not the billed quantity.
+
+Retrieve successful results promptly. Nini deletes partner source content after processing. The API stops serving result content within 24 hours of completion, as shown by `result_expires_at`, and automated cleanup targets the same retention window with S3 lifecycle expiration as a backstop.
+
+<Note>
+  File-size limits and profiles are assigned during onboarding. Contact Nini before a planned traffic increase rather than designing around repeated `429` responses.
+</Note>

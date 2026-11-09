@@ -1,0 +1,43 @@
+---
+title: "Nini API"
+description: "Send documents to Nini and receive structured extraction results in your application."
+---
+
+Nini's API lets your application submit a document, upload it directly to secure storage, and retrieve a structured result when processing completes.
+
+The ingestion API is asynchronous and isolated by organization. Your requests do not enter Nini's matching, reconciliation, or ledger workflows.
+
+Document content is processed through a separate transient storage path. Nini deletes the source after processing and stops serving the extraction result within 24 hours. Automated cleanup targets the same retention window, with S3 lifecycle expiration as a backstop. The API retains non-content operational metadata, such as the extraction ID, status, timestamps, usage, and cost, for security, billing, and idempotency.
+
+## How it works
+
+<Steps>
+  <Step title="Create an extraction">
+    Send the document metadata and your assigned extraction profile. Nini returns an extraction ID and a short-lived upload request.
+  </Step>
+  <Step title="Upload the document">
+    Upload the exact file directly to the returned URL with the returned `method`, `content_type`, and `content_length`.
+  </Step>
+  <Step title="Retrieve the result">
+    Poll the extraction by ID while it is `awaiting_upload` or `processing`, until its status is `succeeded` or `failed`.
+  </Step>
+</Steps>
+
+<CardGroup cols={2}>
+  <Card title="Run the quickstart" icon="rocket" href="/developers/quickstart">
+    Make your first extraction request.
+  </Card>
+  <Card title="Browse the API" icon="brackets-curly" href="/api-reference/introduction">
+    Explore operations and response schemas generated from Nini's OpenAPI contract.
+  </Card>
+</CardGroup>
+
+## Access
+
+Bookkeepers, Controllers, and Admins can manage API credentials in **Nini → Settings → Developer access**. Credentials are organization-bound, locked to a processing region, and use OAuth 2.0 client credentials. Keep the client secret in a secret manager; Nini displays it only when it is created or rotated.
+
+The API is available in two processing regions: Canada (Montreal) at `https://api.nini.io` and the United States (N. Virginia) at `https://api.us.nini.io`. Two profiles are available: [`ocr.v1`](/developers/ocr) for page-preserving text and [`legal_case.v1`](/developers/legal-case-extraction) for typed legal case data.
+
+<Note>
+  The documentation describes the stable platform contract. The extraction profiles and limits enabled for your organization are confirmed during onboarding.
+</Note>

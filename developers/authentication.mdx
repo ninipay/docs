@@ -1,0 +1,51 @@
+---
+title: "Authentication"
+description: "Use organization-bound OAuth credentials without exposing secrets."
+---
+
+The Nini API uses OAuth 2.0 client credentials for server-to-server access. Each credential belongs to one organization, is locked to one processing region, and is granted the `extraction:read` and `extraction:write` scopes.
+
+## Manage credentials
+
+Bookkeepers, Controllers, and Admins can manage credentials in **Nini → Settings → Developer access**, under **API credentials**. An organization can have up to three active credentials at a time.
+
+To create one, select **+** (**Create credential**), enter a **Credential name** of up to 64 characters, choose a **Processing region**, and select **Create credential**. The next dialog shows the **Client ID**, **Client secret**, **API base URL**, and a ready-made **Token request** that contains the token URL and audience. The client secret appears only once, when a credential is created or rotated. Select **I saved it** after you store it.
+
+- Store client secrets in a production secret manager.
+- Request access tokens from the token URL in the token request.
+- Send API requests to the API base URL shown with the credential.
+- Send the token as `Authorization: Bearer <token>`.
+- Rotate a credential if its secret may have been exposed.
+- Revoke credentials that are no longer used.
+
+To rotate or revoke a credential, open its actions menu and select **Rotate** or **Revoke**. Revoked credentials stay listed behind a **Show revoked credentials** toggle and cannot be restored.
+
+<Warning>
+  Never put a client secret or access token in browser code, a mobile application, source control, logs, support messages, or analytics properties.
+</Warning>
+
+## Access tokens
+
+Request a token with the `client_credentials` grant, your client ID and secret, and the audience from the token request. Access tokens are JWTs that expire after one hour. Cache a token until shortly before it expires instead of requesting one for every call.
+
+## Scopes
+
+| Scope | Allows |
+| --- | --- |
+| `extraction:write` | Create an extraction and receive its upload request. |
+| `extraction:read` | Retrieve extraction state and organization usage. |
+
+Nini derives organization identity and processing region from the credential. Requests cannot select or override either value using a body field or header. A regional endpoint rejects credentials issued for another region with `403`.
+
+| Region | API base URL |
+| --- | --- |
+| Canada (Montreal) | `https://api.nini.io` |
+| United States (N. Virginia) | `https://api.us.nini.io` |
+
+## Rotation
+
+Rotating a credential invalidates its old secret immediately and shows the replacement once. Existing extraction IDs remain attached to the organization and can be read with any active credential for that organization.
+
+Revoking a credential stops it from requesting new access tokens and cannot be undone.
+
+To change processing regions, revoke all active credentials for the organization and create replacements in the new region. While any credential is active, new credentials must use the same region.
